@@ -1,0 +1,3 @@
+/* link underlines tend to make hypertext less readable,
+   because underlines obscure the shapes of the lower halves of words */
+:link,:visited { text-decoration:none }

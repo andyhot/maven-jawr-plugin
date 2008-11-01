@@ -1,0 +1,2 @@
+/* no list-markers by default, since lists are used more often for semantics */
+ul,ol { list-style:none }

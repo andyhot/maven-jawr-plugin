@@ -48,14 +48,6 @@ import static org.easymock.EasyMock.*;
  */
 public class JawrMojo extends AbstractJawrMojo {
     
-    public static void main(String[] args) throws IOException {
-        JawrMojo test = new JawrMojo();
-        test.setConfigLocation("file:/home/andyhot/projects/java/amplafi/amplafi-web/src/main/ext-resources/jaws.properties");
-        test.setRootPath("/home/andyhot/projects/java/amplafi/amplafi-web/src/main/webapp");
-        test.setBundles("/css/bundle-member.css", "/css/bundle-guest.css");
-        test.createBundles();
-    }
-    
     public void createBundles() throws IOException {
         String type = "css";
         Map contextAttributes = new HashMap();
