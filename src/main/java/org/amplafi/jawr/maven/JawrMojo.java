@@ -49,7 +49,6 @@ import static org.easymock.EasyMock.*;
 public class JawrMojo extends AbstractJawrMojo {
     
     public void createBundles() throws IOException {
-        String type = "css";
         Map contextAttributes = new HashMap();
         contextAttributes.put("javax.servlet.context.tempdir", new File(System.getProperty("java.io.tmpdir")));
         Response respData = new Response();
@@ -59,21 +58,25 @@ public class JawrMojo extends AbstractJawrMojo {
         HttpServletRequest req = createMock(HttpServletRequest.class);
         HttpServletResponse resp = createMock(HttpServletResponse.class);
         
-        setupJawrConfig(config, context, contextAttributes, type);
+        setupJawrConfig(config, context, contextAttributes, respData);
         setupRequest(req, resp, respData);
         
         replay(config, context, req, resp);
         
-        JawrServlet jawr = new JawrServlet();
         try {
-            jawr.init(config);
-            
-            ResourceBundlesHandler handler = (ResourceBundlesHandler) context.getAttribute(ResourceBundlesHandler.CSS_CONTEXT_ATTRIBUTE);
-            
+
             for (String bundle : getBundles()) {
                 respData.clear();
-                respData.setPath(createLinkToBundle(handler, bundle));                       
-                jawr.service(req, resp);            
+                respData.setTypeFromBundle(bundle);
+
+                JawrServlet jawr = new JawrServlet();
+                jawr.init(config);
+                String attrName = "css".equals(respData.getType()) ?
+                        ResourceBundlesHandler.CSS_CONTEXT_ATTRIBUTE : ResourceBundlesHandler.JS_CONTEXT_ATTRIBUTE;  
+                ResourceBundlesHandler handler = (ResourceBundlesHandler) context.getAttribute(attrName);
+
+                respData.setPath(createLinkToBundle(handler, bundle));
+                jawr.service(req, resp);
                 System.out.println(respData);
                 File file = new File(getRootPath() + bundle);
                 FileUtils.writeStringToFile(file, respData.getData());
@@ -96,8 +99,7 @@ public class JawrMojo extends AbstractJawrMojo {
         return sw.toString();
     }
 
-    private void setupJawrConfig(ServletConfig config, ServletContext context,
-            final Map attributes, String type) {        
+    private void setupJawrConfig(ServletConfig config, ServletContext context, final Map attributes, final Response respData) {
         expect(config.getServletContext()).andReturn(context).anyTimes();
         expect(config.getServletName()).andReturn("maven-jawr-plugin").anyTimes();
         
@@ -162,15 +164,19 @@ public class JawrMojo extends AbstractJawrMojo {
             
         }).anyTimes();
         
-        expect(config.getInitParameterNames()).andReturn(new Vector().elements());
-        
-        expect(config.getInitParameter("type")).andReturn(type);        
-        expect(config.getInitParameter("configLocation")).andReturn(getConfigLocation());
-        expect(config.getInitParameter("configPropertiesSourceClass")).andReturn(null);
+        expect(config.getInitParameterNames()).andReturn(new Vector().elements()).anyTimes();
+
+        expect(config.getInitParameter("type")).andAnswer(new IAnswer<String>() {
+            public String answer() throws Throwable {
+                return respData.getType();
+            }
+        }).anyTimes();
+
+        expect(config.getInitParameter("configLocation")).andReturn(getConfigLocation()).anyTimes();
+        expect(config.getInitParameter("configPropertiesSourceClass")).andReturn(null).anyTimes();
     }
 
-    private void setupRequest(HttpServletRequest req, HttpServletResponse resp, 
-            final Response respData) throws IOException {
+    private void setupRequest(HttpServletRequest req, HttpServletResponse resp, final Response respData) throws IOException {
         expect(req.getMethod()).andReturn("GET").anyTimes();
         expect(req.getServletPath()).andAnswer(new IAnswer<String>() {
             public String answer() throws Throwable {

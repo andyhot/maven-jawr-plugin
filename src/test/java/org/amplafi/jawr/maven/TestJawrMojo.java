@@ -25,26 +25,65 @@ import java.io.DataInputStream;
  * @author Andreas Andreou
  */
 public class TestJawrMojo {
+    private static final String EXPECTED_JS_ONE = "\n" +
+            "var one={_id:0,_name:'',process:function(name){_name=name;return\"Mr. \"+_name+\" (\"+_id+\")\";}};var two={_name:'',setName:function(name){_name=name;}};";
+    private static final String EXPECTED_CSS_ONE = ":link,:visited{text-decoration:none}ul,ol{list-style:none}";
 
     @Test
-    public void testCreateBundles() throws IOException {
+    public void testCreateCssBundles() throws IOException {
+
+        final String fileOne = "/css/bundle-one.css";
+        final String fileTwo = "/css/bundle-two.css";
+        doBundleCreation("/jaws.properties", fileOne, fileTwo);
+
+        String one = readStream(getClass().getResourceAsStream(fileOne));
+        String two = readStream(getClass().getResourceAsStream(fileTwo));
+
+        Assert.assertEquals(EXPECTED_CSS_ONE, one);
+	    Assert.assertEquals("h1,h2,h3,h4,h5,h6,pre,code{font-size:1em;}address{font-style:normal}", two);
+    }
+
+    @Test
+    public void testCreateJsBundles() throws IOException {
+
+        final String fileOne = "/js/bundle-one.js";
+        final String fileTwo = "/js/bundle-two.js";
+        doBundleCreation("/jaws-js.properties", fileOne, fileTwo);
+
+        String one = readStream(getClass().getResourceAsStream(fileOne));
+        String two = readStream(getClass().getResourceAsStream(fileTwo));
+
+        Assert.assertEquals(EXPECTED_JS_ONE, one);
+	    Assert.assertEquals("\n" +
+                "var two={_name:'',setName:function(name){_name=name;}};", two);
+    }
+
+    @Test
+    public void testCreateBothBundles() throws IOException {
+
+        final String fileOne = "/css/bundle-all-one.css";
+        final String fileTwo = "/js/bundle-all-one.js";
+        doBundleCreation("/jaws-all.properties", fileOne, fileTwo);
+
+        String one = readStream(getClass().getResourceAsStream(fileOne));
+        String two = readStream(getClass().getResourceAsStream(fileTwo));
+
+        Assert.assertEquals(EXPECTED_CSS_ONE, one);
+        Assert.assertEquals(EXPECTED_JS_ONE, two);
+    }
+
+    private void doBundleCreation(String propertyFile, String... bundles) throws IOException {
         JawrMojo test = new JawrMojo();
 
-        String jawsProperties = getClass().getResource("/jaws.properties").getFile();
+        String jawsProperties = getClass().getResource(propertyFile).getFile();
         test.setConfigLocation("file:/" + jawsProperties);
 
         String root = getClass().getResource("/").getFile();
         test.setRootPath(root);
-        
-        test.setBundles("/css/bundle-one.css", "/css/bundle-two.css");
+
+        test.setBundles(bundles);
 
         test.createBundles();
-
-        String one = readStream(getClass().getResourceAsStream("/css/bundle-one.css"));
-        String two = readStream(getClass().getResourceAsStream("/css/bundle-two.css"));
-
-        Assert.assertEquals(":link,:visited{text-decoration:none}ul,ol{list-style:none}", one);
-	    Assert.assertEquals("h1,h2,h3,h4,h5,h6,pre,code{font-size:1em;}address{font-style:normal}", two);
     }
 
     private String readStream(InputStream stream) {

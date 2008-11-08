@@ -27,6 +27,7 @@ public class Response {
     private Map<String, Object> headers;
     private String contentType;
     private String path;
+    private String type;
     private int contentLength;
     private int status;
     private StringWriter writer;
@@ -41,6 +42,7 @@ public class Response {
         contentLength = 0;
         contentType = null;
         path = null;
+        type = null;
         status = 0;
     }
 
@@ -87,11 +89,27 @@ public class Response {
     public String getData() {
         return writer.toString();
     }
-    
+
+    public void setTypeFromBundle(String path) {
+        if (path!=null && path.endsWith(".css")) {
+            setType("css");
+        } else {
+            setType("js");
+        }        
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
     @Override
     public String toString() {
         return "Status: " + status + " Length: " + contentLength + 
-                " Type: " + contentType + " Path: " + path + 
+                " ContentType: " + contentType + " Path: " + path + 
                 "";//"\n" + getData();
     }
     
