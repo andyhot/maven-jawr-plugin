@@ -1,0 +1,26 @@
+maven-jawr-plugin is a maven plugin for the https://jawr.dev.java.net/ project
+(that among other things does bundling and compressing of javascript and CSS)
+
+Simple usage (add inside the <build> tag of your pom.xml):
+
+    <plugin>
+        <groupId>org.amplafi.jawr</groupId>
+        <artifactId>maven-jawr-plugin</artifactId>
+        <version>0.4-SNAPSHOT</version>
+        <executions>
+          <execution>
+            <!-- Use this phase so that maven war includes our bundles -->
+            <phase>process-resources</phase>
+            <goals>
+              <goal>bundle</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+            <configLocation>src/main/resources/jaws.properties</configLocation>
+            <bundles>
+                <bundle>/css/bundle-member.css</bundle>
+                <bundle>/css/bundle-guest.css</bundle>
+            </bundles>
+        </configuration>
+    </plugin>
