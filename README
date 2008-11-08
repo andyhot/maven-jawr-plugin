@@ -1,6 +1,9 @@
 maven-jawr-plugin is a maven plugin for the https://jawr.dev.java.net/ project
 (that among other things does bundling and compressing of javascript and CSS)
 
+Read https://jawr.dev.java.net/docs/descriptor_syntax.html for what your
+jaws.properties file can include.
+
 Simple usage (add inside the <build> tag of your pom.xml):
 
     <plugin>
@@ -24,3 +27,12 @@ Simple usage (add inside the <build> tag of your pom.xml):
             </bundles>
         </configuration>
     </plugin>
+
+Finally, an alternative way of getting the plugin (instead of building and installing
+it from source) is by adding this repository in your pom.xml:
+
+    <repository>
+        <id>tacos-snapshot-repo</id>
+        <name>Tacos Snapshot Repo</name>
+        <url>http://tacos.sourceforge.net/nightly/</url>
+    </repository>

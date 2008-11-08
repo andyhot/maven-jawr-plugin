@@ -58,7 +58,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-deploy-plugin</artifactId>
-                <version>2.3</version>
+                <version>2.4</version>
             </plugin>	
         </plugins>
     </build>
@@ -165,6 +165,18 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <distributionManagement>
+        <repository>
+            <id>tacos-repo</id>
+            <url>scp://shell.sourceforge.net/home/groups/t/ta/tacos/htdocs/repository</url>
+        </repository>
+        <snapshotRepository>
+            <id>tacos-snapshot-repo</id>
+            <url>scp://shell.sourceforge.net/home/groups/t/ta/tacos/htdocs/nightly</url>
+        </snapshotRepository>
+    </distributionManagement>    
+
     <repositories>
         <repository>
             <id>maven2-repository.dev.java.net</id>
@@ -173,4 +185,5 @@
             <layout>default</layout>
         </repository>
     </repositories>
+    
 </project>
