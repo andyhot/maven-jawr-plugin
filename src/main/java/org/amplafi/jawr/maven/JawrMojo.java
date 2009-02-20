@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -49,7 +50,7 @@ import static org.easymock.EasyMock.*;
 public class JawrMojo extends AbstractJawrMojo {
     
     public void createBundles() throws IOException {
-        Map contextAttributes = new HashMap();
+        Map<String, Object> contextAttributes = new HashMap<String, Object>();
         contextAttributes.put("javax.servlet.context.tempdir", new File(System.getProperty("java.io.tmpdir")));
         Response respData = new Response();
         
@@ -95,11 +96,12 @@ public class JawrMojo extends AbstractJawrMojo {
 
         BundleLinkRenderer renderer = new BundleLinkRenderer(handler, true);
         StringWriter sw = new StringWriter();        
-        renderer.renderBundleLinks(path,"", "", new HashSet(), false, sw);
+        renderer.renderBundleLinks(path,"", "", new HashSet<String>(), false, sw);
         return sw.toString();
     }
 
-    private void setupJawrConfig(ServletConfig config, ServletContext context, final Map attributes, final Response respData) {
+    private void setupJawrConfig(ServletConfig config, ServletContext context, 
+    		final Map<String, Object> attributes, final Response respData) {
         expect(config.getServletContext()).andReturn(context).anyTimes();
         expect(config.getServletName()).andReturn("maven-jawr-plugin").anyTimes();
         
@@ -108,8 +110,8 @@ public class JawrMojo extends AbstractJawrMojo {
 
         expect(context.getResourcePaths(isA(String.class))).andAnswer(new IAnswer<Set>() {
 
-            public Set answer() throws Throwable {
-                final Set set = new HashSet();
+            public Set<String> answer() throws Throwable {
+                final Set<String> set = new HashSet<String>();
                 
                 // hack to disallow orphan bundles
                 Exception e = new Exception();
@@ -164,7 +166,17 @@ public class JawrMojo extends AbstractJawrMojo {
             
         }).anyTimes();
         
-        expect(config.getInitParameterNames()).andReturn(new Vector().elements()).anyTimes();
+        expect(config.getInitParameterNames()).andReturn(new Enumeration<String>() {
+        	
+			public boolean hasMoreElements() {
+				return false;
+			}
+
+			public String nextElement() {
+				return null;
+			}
+        	
+        }).anyTimes();
 
         expect(config.getInitParameter("type")).andAnswer(new IAnswer<String>() {
             public String answer() throws Throwable {
