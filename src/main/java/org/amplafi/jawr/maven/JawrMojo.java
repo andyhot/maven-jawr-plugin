@@ -195,8 +195,9 @@ public class JawrMojo extends AbstractJawrMojo {
                 return respData.getPath();
             }
         }).anyTimes();
-        expect(req.getHeader("If-Modified-Since")).andReturn(null).anyTimes();
-        
+        expect(req.getHeader("If-Modified-Since")).andReturn(null).anyTimes();        
+        expect(req.getHeader("If-None-Match")).andReturn(null).anyTimes();
+
         resp.setHeader(isA(String.class), isA(String.class));
         expectLastCall().andAnswer(new IAnswer<Object>() {
 
