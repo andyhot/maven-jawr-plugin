@@ -6,7 +6,7 @@
     <!--packaging>jar</packaging-->
     <packaging>maven-plugin</packaging>
     <name>JAWR Maven JavaScript Plugin</name>
-    <version>0.4-SNAPSHOT</version>
+    <version>0.4</version>
     <url>https://sourceforge.net/projects/maven-jawr-plugin/</url>
 	<!-- Description -->
     <description>
@@ -177,11 +177,11 @@
     <distributionManagement>
         <repository>
             <id>tacos-repo</id>
-            <url>scp://shell.sourceforge.net/home/groups/t/ta/tacos/htdocs/repository</url>
+            <url>scp://web.sourceforge.net/home/groups/t/ta/tacos/htdocs/repository</url>
         </repository>
         <snapshotRepository>
             <id>tacos-snapshot-repo</id>
-            <url>scp://shell.sourceforge.net/home/groups/t/ta/tacos/htdocs/nightly</url>
+            <url>scp://web.sourceforge.net/home/groups/t/ta/tacos/htdocs/nightly</url>
         </snapshotRepository>
     </distributionManagement>    
 
