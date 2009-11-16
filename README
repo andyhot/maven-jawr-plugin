@@ -2,14 +2,19 @@ maven-jawr-plugin is a maven plugin for the https://jawr.dev.java.net/ project
 (that among other things does bundling and compressing of javascript and CSS)
 
 Read https://jawr.dev.java.net/docs/descriptor_syntax.html for what your
-jaws.properties file can include.
+jaws.properties file can include. Since (with this maven plugin )you'll
+be dealing with static files, you'll probably have no need for the
+cssurlrewrite post processor (+ it can mess the cssimport processor) - so, 
+just disable it with:
+jawr.css.bundle.factory.filepostprocessors=none
+
 
 Simple usage (add inside the <build> tag of your pom.xml):
 
     <plugin>
         <groupId>org.amplafi.jawr</groupId>
         <artifactId>maven-jawr-plugin</artifactId>
-        <version>0.4-SNAPSHOT</version>
+        <version>0.5-SNAPSHOT</version>
         <executions>
           <execution>
             <!-- Use this phase so that maven war includes our bundles -->
