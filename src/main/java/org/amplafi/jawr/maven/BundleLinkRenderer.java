@@ -14,6 +14,7 @@
 
 package org.amplafi.jawr.maven;
 
+import net.jawr.web.JawrConstant;
 import net.jawr.web.resource.bundle.handler.ResourceBundlesHandler;
 import net.jawr.web.resource.bundle.renderer.AbstractBundleLinkRenderer;
 
@@ -31,5 +32,9 @@ public class BundleLinkRenderer extends AbstractBundleLinkRenderer {
     protected String renderLink(String fullPath) {
         return fullPath;
     }
+
+	public String getResourceType() {
+		return JawrConstant.CSS_TYPE;
+	}
 
 }

@@ -25,7 +25,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletConfig;
@@ -33,7 +32,10 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import net.jawr.web.JawrConstant;
 import net.jawr.web.resource.bundle.handler.ResourceBundlesHandler;
+import net.jawr.web.resource.bundle.renderer.BundleRendererContext;
 import net.jawr.web.servlet.JawrServlet;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -73,7 +75,7 @@ public class JawrMojo extends AbstractJawrMojo {
                 JawrServlet jawr = new JawrServlet();
                 jawr.init(config);
                 String attrName = "css".equals(respData.getType()) ?
-                        ResourceBundlesHandler.CSS_CONTEXT_ATTRIBUTE : ResourceBundlesHandler.JS_CONTEXT_ATTRIBUTE;  
+                		JawrConstant.CSS_CONTEXT_ATTRIBUTE : JawrConstant.JS_CONTEXT_ATTRIBUTE;  
                 ResourceBundlesHandler handler = (ResourceBundlesHandler) context.getAttribute(attrName);
 
                 respData.setPath(createLinkToBundle(handler, bundle));
@@ -95,8 +97,9 @@ public class JawrMojo extends AbstractJawrMojo {
     private String createLinkToBundle(ResourceBundlesHandler handler, String path) throws IOException {
 
         BundleLinkRenderer renderer = new BundleLinkRenderer(handler, true);
-        StringWriter sw = new StringWriter();        
-        renderer.renderBundleLinks(path,"", "", new HashSet<String>(), false, sw);
+        StringWriter sw = new StringWriter();  
+        BundleRendererContext ctx = new BundleRendererContext("", "", false, false);
+        renderer.renderBundleLinks(path, ctx, sw);
         return sw.toString();
     }
 
@@ -178,9 +181,9 @@ public class JawrMojo extends AbstractJawrMojo {
         	
         }).anyTimes();
 
-        expect(config.getInitParameter("type")).andAnswer(new IAnswer<String>() {
+        expect(config.getInitParameter(JawrConstant.TYPE_INIT_PARAMETER)).andAnswer(new IAnswer<String>() {
             public String answer() throws Throwable {
-                return respData.getType();
+                return respData==null ? null : respData.getType();
             }
         }).anyTimes();
 
@@ -189,7 +192,8 @@ public class JawrMojo extends AbstractJawrMojo {
     }
 
     private void setupRequest(HttpServletRequest req, HttpServletResponse resp, final Response respData) throws IOException {
-        expect(req.getMethod()).andReturn("GET").anyTimes();
+        expect(req.getSession(false)).andReturn(null).anyTimes();
+    	expect(req.getMethod()).andReturn("GET").anyTimes();
         expect(req.getServletPath()).andAnswer(new IAnswer<String>() {
             public String answer() throws Throwable {
                 return respData.getPath();
